@@ -35,7 +35,7 @@ jobs:
       - name: Update deployment file
         run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|ghcr.io/thewasta/click2eat-landing:.*|ghcr.io/thewasta/click2eat-landing:'${TAG}'|' $GITHUB_WORKSPACE/deployment.digitalocean.yaml
       - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }}
+        run: doctl kubernetes cluster kubeconfig save ${{ secrets.DO_CLUSTER_ID }}
       - name: Deploy to DigitalOcean Kubernetes
         run: kubectl apply -f $GITHUB_WORKSPACE/deployment.digitalocean.yaml
       - name: Verify deployment
