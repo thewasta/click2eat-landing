@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: landing-app
-          image: <IMAGE>
+          image: ghcr.io/thewasta/click2eat-landing:example
           ports:
             - containerPort: 3000
       imagePullSecrets:
