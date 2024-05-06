@@ -24,14 +24,14 @@ jobs:
          registry: ghcr.io
          username: ${{github.actor}}
          password: ${{secrets.GITHUB_TOKEN}}
-      - name: Build image
-        run: |
-          docker build --tag ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7) .
-          docker push ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7)
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Build image
+        run: |
+          docker build --tag ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7) .
+          docker push ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7)
       - name: Update deployment file
         run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|ghcr.io/thewasta/click2eat-landing:.*|ghcr.io/thewasta/click2eat-landing:'${TAG}'|' $GITHUB_WORKSPACE/deployment.digitalocean.yaml
       - name: Save DigitalOcean kubeconfig with short-lived credentials
