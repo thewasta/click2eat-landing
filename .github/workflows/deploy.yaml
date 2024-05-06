@@ -23,7 +23,7 @@ jobs:
          password: ${{secrets.GITHUB_TOKEN}}
       - name: Build image
         run: |
-          docker build . --tag ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7) .
+          docker build --tag ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7) .
           docker push ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7) .
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
