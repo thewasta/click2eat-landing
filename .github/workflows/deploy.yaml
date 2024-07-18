@@ -8,35 +8,75 @@ on:
     branches:
       - main
       - dev
-  workflow_dispatch:
+    tags-ignore:
+      - '**'
 jobs:
-  build:
+  #  build:
+  #    runs-on: ubuntu-latest
+  #    permissions:
+  #      contents: read
+  #      packages: write
+  #    steps:
+  #      - name: Check out
+  #        uses: actions/checkout@master
+  #      - name: 'Login to GitHub Container Registry'
+  #        uses: docker/login-action@v1
+  #        with:
+  #         registry: ghcr.io
+  #         username: ${{github.actor}}
+  #         password: ${{secrets.GITHUB_TOKEN}}
+  #      - name: Install doctl
+  #        uses: digitalocean/action-doctl@v2
+  #        with:
+  #          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+  #      - name: Build image
+  #        run: |
+  #          docker build --tag ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7) .
+  #          docker push ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7)
+  notification_start:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+#    steps:
+#      - name: Notify start action
+#        uses: rjstone/discord-webhook-notify@v1
+#        with:
+#          severity: info
+#          color: '#0059ff'
+#          details: New push to landing website
+#          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+  deploy_pro:
+    name: Deploy production
+    if: github.ref == 'ref/heads/main'
+    needs:
+      - notification_start
+    runs-on: [self-hosted, prod]
+    environment: pro
     steps:
-      - name: Check out
-        uses: actions/checkout@master
-      - name: 'Login to GitHub Container Registry'
-        uses: docker/login-action@v1
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-         registry: ghcr.io
-         username: ${{github.actor}}
-         password: ${{secrets.GITHUB_TOKEN}}
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
+          clean: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      - name: Build image
-        run: |
-          docker build --tag ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7) .
-          docker push ghcr.io/thewasta/click2eat-landing:$(echo $GITHUB_SHA | head -c7)
-      - name: Update deployment file
-        run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|ghcr.io/thewasta/click2eat-landing:.*|ghcr.io/thewasta/click2eat-landing:'${TAG}'|' $GITHUB_WORKSPACE/deployment.digitalocean.yaml
-      - name: Print deployment.yaml
-        run: cat $GITHUB_WORKSPACE/deployment.digitalocean.yaml
-      - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save ${{ secrets.DO_CLUSTER_ID }}
-      - name: Deploy to DigitalOcean Kubernetes
-        run: kubectl -n testing apply -f $GITHUB_WORKSPACE/deployment.digitalocean.yaml
+          node-version: 20.12.2
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: node -r dotenv/config ./node_modules/.bin/next build
+#      - name: Reload application
+#        run: pm2 reload 1
+#      - name: Deploy Success
+#        uses: rjstone/discord-webhook-notify@v1
+#        if: success()
+#        with:
+#          severity: info
+#          details: Desplegado producción con éxito!
+#          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+#      - name: Deploy failed
+#        uses: rjstone/discord-webhook-notify@v1
+#        if: failure()
+#        with:
+#          severity: error
+#          details: Ha fallado el despliegue a producción
+#          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}

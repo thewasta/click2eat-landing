@@ -8,7 +8,11 @@ const inter = Inter({subsets: ["latin"]});
 
 export const metadata: Metadata = {
     title: "Click2Eat | Tu Aliado en la Gestión de Comandas para Hostelería",
-    description: "Mejora la experiencia de tus clientes y optimiza tu restaurante con Click2Eat. Menús digitales, pedidos en línea y atención al cliente optimizada. ¡Pruébalo ahora!"
+    description: "Mejora la experiencia de tus clientes y optimiza tu restaurante con Click2Eat. Menús digitales, pedidos en línea y atención al cliente optimizada. ¡Pruébalo ahora!",
+    robots: {
+        index: false,
+        follow: false,
+    }
 };
 
 export default function RootLayout({
