@@ -65,6 +65,8 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+      - name: Reload application
+        run: pm2 reload landing
 #      - name: Reload application
 #        run: pm2 reload 1
 #      - name: Deploy Success
