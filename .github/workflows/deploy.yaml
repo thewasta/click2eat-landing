@@ -46,7 +46,7 @@ jobs:
 #          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   deploy_pro:
     name: Deploy production
-    if: github.ref == 'ref/heads/main'
+#    if: github.ref == 'ref/heads/main'
 #    needs:
 #      - notification_start
     runs-on: [self-hosted, prod]
