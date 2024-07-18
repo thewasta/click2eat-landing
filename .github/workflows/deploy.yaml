@@ -46,8 +46,8 @@ jobs:
   deploy_pro:
     name: Deploy production
     if: github.ref == 'ref/heads/main'
-    needs:
-      - notification_start
+#    needs:
+#      - notification_start
     runs-on: [self-hosted, prod]
     environment: pro
     steps:
